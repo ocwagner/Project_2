@@ -1,8 +1,35 @@
 library(tidyverse)
 library(Hmisc)
 
-spec_day="monday"
-spec_phrase=paste0("weekday_is_",spec_day)
+day_of_week<-c("monday","tuesday","wednesday","thursday","friday","saturday","sunday")
+spec_phrase<-c(paste0("weekday_is_",day_of_week))
+day_param=lapply(day_of_week,FUN=function(x){list(day_of_week)})
+spec_phrase_param=lapply(spec_phrase,FUN=function(x){list(spec_phrase)})
+
+day_reports<-tibble(day_of_week,day_param,spec_phrase,spec_phrase_param)%>%
+  mutate(output_file=paste0(day_of_week,".html"))
+
+apply(day_reports, MARGIN = 1,
+      FUN=function(x){
+        render(input="C:\\Users\\ocwag\\OneDrive\\Desktop\\Stat-for-Data-Science\\Project_2\\Project_2\\Project_2_Markdown",
+               output_file = x[[5]], spec_phrase_param=x[[4]])})
+
+day_reports[[2]]
+
+
+day_of_week<-c("monday","tuesday","wednesday","thursday","friday","saturday","sunday")
+day_param=lapply(day_of_week,FUN=function(x){list(team=x)})
+spec_phrase<-c(paste0("weekday_is_",day_of_week))
+
+day_reports<-tibble(day_param)%>%
+  mutate(output_file=paste0(day_of_week,".html"),spec_phrase=paste0("weekday_is_",day_of_week))
+
+day_of_week<-c("monday","tuesday","wednesday","thursday","friday","saturday","sunday")
+spec_phrase<-c(paste0("weekday_is_",day_of_week))
+day_param=lapply(day_of_week,FUN=function(x){list(team=x)})
+spec_phrase_param=lapply(spec_phrase,FUN=function(x){list(team=x)})
+
+day_reports<-tibble(day_of_week,day_param,spec_phrase,spec_phrase_param)
 
 ### read in file
 
@@ -19,21 +46,4 @@ data.frame(cor_mat$r[,"shares"])%>%
   rowid_to_column(var="variable")
 
 
-colnames(raw_news_data)
-
-attributes(raw_news_data)
-
-raw_news_data$kw_max_avg
-raw_news_data$weekday_is_monday
-
-View(raw_news_data%>%
-  subset(raw_news_data$)==1)
-           
-days_data<-raw_news_data%>%
-  filter(raw_news_data$weekday_is_monday==1)
-
-### selecting variables of interest
-  
-days_data%>%
-  select(n_tokens_content,num)
 
