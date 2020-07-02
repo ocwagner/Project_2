@@ -4,7 +4,7 @@ author: "Owen Wagner"
 date: "6/28/2020"
 output: html_document
 params:
-  spec_phrase: "weekday_is_monday"
+  spec_phrase: weekday_is_monday
 ---
 
 ```{r setup and read-in, include=FALSE}
@@ -15,11 +15,30 @@ library(rmarkdown)
 raw_news_data<-select(read_csv("C:\\Users\\ocwag\\OneDrive\\Desktop\\Stat-for-Data-Science\\Project_2\\Project_2\\OnlineNewsPopularity\\OnlineNewsPopularity.csv"),-url)
 ```
 
-## Filter data by day
+## Factorize qualitative data.
+```{r factorize, include=FALSE}
+raw_news_data$weekday_is_monday<-as.factor(raw_news_data$weekday_is_monday)
+raw_news_data$weekday_is_tuesday<-as.factor(raw_news_data$weekday_is_tuesday)
+raw_news_data$weekday_is_wednesday<-as.factor(raw_news_data$weekday_is_wednesday)
+raw_news_data$weekday_is_thursday<-as.factor(raw_news_data$weekday_is_thursday)
+raw_news_data$weekday_is_friday<-as.factor(raw_news_data$weekday_is_friday)
+raw_news_data$weekday_is_saturday<-as.factor(raw_news_data$weekday_is_saturday)
+raw_news_data$weekday_is_sunday<-as.factor(raw_news_data$weekday_is_sunday)
+raw_news_data$is_weekend<-as.factor(raw_news_data$is_weekend)
 
+raw_news_data$data_channel_is_lifestyle<-as.factor(raw_news_data$data_channel_is_lifestyle)
+raw_news_data$data_channel_is_entertainment<-as.factor(raw_news_data$data_channel_is_entertainment)
+raw_news_data$data_channel_is_bus<-as.factor(raw_news_data$data_channel_is_bus)
+raw_news_data$data_channel_is_socmed<-as.factor(raw_news_data$data_channel_is_socmed)
+raw_news_data$data_channel_is_tech<-as.factor(raw_news_data$data_channel_is_tech)
+raw_news_data$data_channel_is_world<-as.factor(raw_news_data$data_channel_is_world)
+```
+
+## Filter data by day
 ```{r filter by day, include=TRUE}
-raw_news_data%>%
+day_raw_data<-raw_news_data%>%
   filter(raw_news_data[params$spec_phrase]==1)
 
-raw_news_data[params$spec_phrase]
+day_raw_data[params$spec_phrase]
 ```
+
