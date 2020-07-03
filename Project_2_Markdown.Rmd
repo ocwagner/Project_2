@@ -266,3 +266,4 @@ sixth<-RMSE(boost_tree_sel_pred,scaled_test_data$shares)
 "model name"<-c("lin all","lin select","bag tree","bag tree cv","boost tree","boost tree select")
 kable(data.frame(`model name`,RMSE))
 ```
+*
