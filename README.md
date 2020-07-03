@@ -4,7 +4,7 @@ The analysis for [Monday is available here] (https://github.com/ocwagner/Project
 
 The analysis for [Tuesday is available here] (https://github.com/ocwagner/Project_2/blob/master/tuesday.md)
 
-The analysis for [Wednesda is available here] (https://github.com/ocwagner/Project_2/blob/master/wednesday.md)
+The analysis for [Wednesday is available here] (https://github.com/ocwagner/Project_2/blob/master/wednesday.md)
 
 The analysis for [Thursday is available here] (https://github.com/ocwagner/Project_2/blob/master/thursday.md)
 
