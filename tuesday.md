@@ -101,7 +101,8 @@ all and just the select independent variables mentioned. We also look at
 the bagged tree model with and without cross validation. For most days
 of the week, there is little variation in predictiveness across models,
 with the exception being Tuesday where the most basic linear model
-performs markedly worse.
+performs markedly worse. This implies that the relationship between the
+independent variables and shares is likely linear in nature.
 
 # Load in data
 
@@ -440,7 +441,8 @@ Predictions are made on the scaled, test data set.
 lin_all_pred<-predict(linear_all_model,newdata=scaled_test_data)
 ```
 
-    ## Warning in predict.lm(modelFit, newdata): prediction from a rank-deficient fit may be misleading
+    ## Warning in predict.lm(modelFit, newdata): prediction from a rank-deficient
+    ## fit may be misleading
 
 ``` r
 lin_sel_pred<-predict(linear_select_model,newdata=scaled_test_data)
