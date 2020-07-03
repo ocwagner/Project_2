@@ -4,10 +4,16 @@ library(rmarkdown)
 library(caret)
 library(psych)
 library(modelr)
+library(knitr)
+
 
 ### read in file
 
-raw_news_data<-select(read_csv("C:\\Users\\ocwag\\OneDrive\\Desktop\\Stat-for-Data-Science\\Project_2\\Project_2\\OnlineNewsPopularity\\OnlineNewsPopularity.csv"),-url)
+raw_news_data<-select(read_csv("C:\\Users\\ocwag\\OneDrive\\Desktop\\Stat-for-Data-Science\\Project_2\\Project_2\\OnlineNewsPopularity\\OnlineNewsPopularity.csv"),-url,-timedelta)
+View(raw_news_data)
+attributes(raw_news_data)
+summary(raw_news_data)
+NROW(raw_news_data)
 
 ### factorize qualitative variables
 raw_news_data$weekday_is_monday<-as.factor(raw_news_data$weekday_is_monday)
@@ -42,9 +48,9 @@ avg<-round(data.frame("AVG"=sapply(data_for_summary,mean,na.rm=FALSE)),2)
 stan_dev<-data.frame("SD"=round(apply(data_for_summary,2,sd),2))
 maximum<-data.frame("MAX"=round(as.numeric(apply(data_for_summary,2,max)),2))
 minimum<-data.frame("MIN"=round(as.numeric(apply(data_for_summary,2,min)),2))
-cbind(VARIABLE,avg,stan_dev,maximum,minimum)
-
-View(data_for_summary)
+stat_data<-cbind(VARIABLES,avg,stan_dev,maximum,minimum)
+rownames(stat_data)<-c()
+stat_data
 
 channel_dig<-data_for_summary%>%
   mutate("data_channel" = ifelse(data_channel_is_bus==1,"business",
@@ -53,8 +59,6 @@ channel_dig<-data_for_summary%>%
                                  ifelse(data_channel_is_socmed==1,"social",
                                  ifelse(data_channel_is_tech==1,"tech","world"))))))
 
-
-view(channel_dig)
 
 ggplot(channel_dig, aes(x=data_channel, y=shares, color=data_channel))+
   geom_boxplot()+
@@ -66,10 +70,7 @@ ggplot(channel_dig, aes(x=data_channel, y=shares, color=data_channel))+
 
 channel_dig%>%
   group_by(data_channel)%>%
-  dplyr::summarize(shares=mean(shares))
-
-mean(channel_dig$shares)
-
+  dplyr::summarize(shares=median(shares))
 
 cor_mat<-rcorr(as.matrix(raw_data_train))
 data.frame(cor_mat$P[,"shares"])
@@ -96,11 +97,11 @@ data.frame(apply(data_for_summary,2,mean,na.rm=TRUE))
 
 ###
 help(scale)
-scaled_train_data<-data.frame(scale(select(raw_data_train,-c(13:18,31:38)),center = TRUE, scale = TRUE))
-scaled_train_data<-cbind(scaled_train_data,select(raw_data_train,c(13:18,31:38)))
+scaled_train_data<-data.frame(scale(select(raw_data_train,-c(12:17,30:37)),center = TRUE, scale = TRUE))
+scaled_train_data<-cbind(scaled_train_data,select(raw_data_train,c(12:17,30:37)))
 
-scaled_test_data<-data.frame(scale(select(raw_data_test,-c(13:18,31:38)),center = TRUE, scale = TRUE))
-scaled_test_data<-cbind(scaled_test_data,select(raw_data_test,c(13:18,31:38)))
+scaled_test_data<-data.frame(scale(select(raw_data_test,-c(12:17,30:37)),center = TRUE, scale = TRUE))
+scaled_test_data<-cbind(scaled_test_data,select(raw_data_test,c(12:17,30:37)))
 
 ### Create dataframe of parameters
 
@@ -186,19 +187,32 @@ boosted_tree_select<-train(shares~LDA_02+data_channel_is_world+avg_negative_pola
                              LDA_03+kw_max_avg+self_reference_avg_sharess+num_hrefs+num_imgs+
                              global_subjectivity, data=day_data_train,method="gbm")
 
+fitControl <- trainControl(
+  method = "repeatedcv",
+  number = 5,
+  repeats = 5)
+
+bagged_tree_CV<-train(shares~.,data=day_data_train,method="treebag", trControl=fitControl)
+
 ### make predictions
 lin_all_pred<-predict(linear_all_model,newdata=day_data_test)
 lin_sel_pred<-predict(linear_select_model,newdata=day_data_test)
 bag_tree_pred<-predict(bagged_tree,newdata=day_data_test)
+bagged_tree_cv_pred<-predict(bagged_tree_CV,newdata=day_data_test)
 boost_tree_pred<-predict(boosted_tree,newdata=day_data_test)
 boost_tree_sel_pred<-predict(boosted_tree_select,newdata=day_data_test)
+
 
 ### compare predictiveness
 summary(lin_all_pred)
 RMSE(lin_sel_pred)
 help(RMSE)
-RMSE(lin_all_pred,day_data_test$shares)
-RMSE(lin_sel_pred,day_data_test$shares)
-RMSE(bag_tree_pred,day_data_test$shares)
-RMSE(boost_tree_pred,day_data_test$shares)
-RMSE(boost_tree_sel_pred,day_data_test$shares)
+first<-RMSE(lin_all_pred,day_data_test$shares)
+second<-RMSE(lin_sel_pred,day_data_test$shares)
+third<-RMSE(bag_tree_pred,day_data_test$shares)
+fourth<-RMSE(bag_tree_cv_pred,day_data_test$shares)
+fifth<-RMSE(boost_tree_pred,day_data_test$shares)
+sixth<-RMSE(boost_tree_sel_pred,day_data_test$shares)
+`RMSE`<-c(first,second,third,fourth,fifth,sixth)
+"model name"<-c("lin all","lin select","bag tree","bag tree cv","boost tree","boost tree select")
+data.frame(`model name`,RMSE)
