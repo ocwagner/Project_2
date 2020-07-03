@@ -2,9 +2,7 @@
 title: "Project_2_Markdown"
 author: "Owen Wagner"
 date: "6/28/2020"
-output: 
-  html_document:
-    toc: yes
+output: rmarkdown::github_document
 params:
   spec_phrase: weekday_is_monday
 ---

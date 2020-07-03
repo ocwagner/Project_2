@@ -34,7 +34,7 @@ raw_news_data$data_channel_is_world<-as.factor(raw_news_data$data_channel_is_wor
 
 ### training and test sets
 set.seed(1)
-train <- sample(1:nrow(raw_news_data), size = nrow(raw_news_data)*0.8)
+train <- sample(1:nrow(raw_news_data), size = nrow(raw_news_data)*0.7)
 test <- dplyr::setdiff(1:nrow(raw_news_data), train)
 raw_data_train <- raw_news_data[train, ]
 raw_data_test <- raw_news_data[test, ]
@@ -111,7 +111,7 @@ day_param=lapply(day_of_week,FUN=function(x){list(day_of_week=x)})
 spec_phrase_param=lapply(spec_phrase,FUN=function(x){list(spec_phrase=x)})
 
 day_reports<-tibble(day_of_week,day_param,spec_phrase,spec_phrase_param)%>%
-  mutate(output_file=paste0(day_of_week,".html"))
+  mutate(output_file=paste0(day_of_week,".md"))
 
 ###
 
@@ -210,7 +210,7 @@ help(RMSE)
 first<-RMSE(lin_all_pred,day_data_test$shares)
 second<-RMSE(lin_sel_pred,day_data_test$shares)
 third<-RMSE(bag_tree_pred,day_data_test$shares)
-fourth<-RMSE(bag_tree_cv_pred,day_data_test$shares)
+fourth<-RMSE(bagged_tree_cv_pred,day_data_test$shares)
 fifth<-RMSE(boost_tree_pred,day_data_test$shares)
 sixth<-RMSE(boost_tree_sel_pred,day_data_test$shares)
 `RMSE`<-c(first,second,third,fourth,fifth,sixth)
